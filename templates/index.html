@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multilingual Translator Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="background-elements">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+        <div class="floating-shape shape-4"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar glass-nav">
+        <div class="container">
+            <div class="navbar-brand">
+                <i class="fas fa-language brand-icon"></i>
+                <span class="brand-text">TranslatePro</span>
+            </div>
+            <div class="nav-controls">
+                <button id="themeToggle" class="theme-toggle" title="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="container">
+            <!-- Header Section -->
+            <div class="header-section text-center mb-5">
+                <h1 class="main-title">
+                    <span class="gradient-text">Multilingual Translator</span>
+                    {% if gemini_available %}
+                    <div class="ai-badge">
+                        <i class="fas fa-robot"></i>
+                        <span>Powered by Gemini AI</span>
+                    </div>
+                    {% endif %}
+                </h1>
+                <p class="subtitle">Break language barriers with AI-powered translation</p>
+                <div class="quick-guide">
+                    <div class="guide-item">
+                        <i class="fas fa-keyboard"></i>
+                        <span>Type text</span>
+                    </div>
+                    <div class="guide-item">
+                        <i class="fas fa-microphone"></i>
+                        <span>Speak directly</span>
+                    </div>
+                    <!-- <div class="guide-item">
+                        <i class="fas fa-file-audio"></i>
+                        <span>Upload audio</span>
+                    </div> -->
+                </div>
+            </div>
+
+            <!-- Main Card -->
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-xl-8">
+                    <div class="glass-card main-card">
+                        <div class="card-header-custom">
+                            <h3 class="card-title">
+                                <i class="fas fa-globe-americas"></i>
+                                Choose Your Input Method
+                            </h3>
+                        </div>
+                        <div class="card-body-custom">
+                            <!-- Professional Tab Navigation -->
+                            <div class="professional-tabs" id="inputTabs" role="tablist">
+                                <button class="pro-tab active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text" type="button" role="tab">
+                                    <div class="tab-icon">
+                                        <i class="fas fa-keyboard"></i>
+                                    </div>
+                                    <div class="tab-content">
+                                        <span class="tab-title">Smart Translation</span>
+                                        <small class="tab-subtitle">Type or paste text</small>
+                                    </div>
+                                </button>
+                                <button class="pro-tab" id="voice-tab" data-bs-toggle="tab" data-bs-target="#voice" type="button" role="tab">
+                                    <div class="tab-icon">
+                                        <i class="fas fa-microphone"></i>
+                                    </div>
+                                    <div class="tab-content">
+                                        <span class="tab-title">Voice Translation</span>
+                                        <small class="tab-subtitle">Speak directly</small>
+                                    </div>
+                                </button>
+                                <!-- <button class="pro-tab" id="audio-tab" data-bs-toggle="tab" data-bs-target="#audio" type="button" role="tab">
+                                    <div class="tab-icon">
+                                        <i class="fas fa-file-audio"></i>
+                                    </div>
+                                    <div class="tab-content">
+                                        <span class="tab-title">Audio Files</span>
+                                        <small class="tab-subtitle">Upload audio</small>
+                                    </div>
+                                </button> -->
+                                <button class="pro-tab" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat" type="button" role="tab">
+                                    <div class="tab-icon">
+                                        <i class="fas fa-comments"></i>
+                                    </div>
+                                    <div class="tab-content">
+                                        <span class="tab-title">AI Assistant</span>
+                                        <small class="tab-subtitle">Chat with AI</small>
+                                    </div>
+                                </button>
+                            </div>
+
+                            <!-- Tab Content -->
+                            <div class="tab-content-custom" id="inputTabsContent">
+                                <!-- Professional Text Input Tab -->
+                                <div class="tab-pane-custom fade show active" id="text" role="tabpanel">
+                                    <div class="professional-form">
+                                        <!-- Text Input Section -->
+                                        <div class="pro-input-section">
+                                            <div class="section-header">
+                                                <h4><i class="fas fa-edit"></i> Input Text</h4>
+                                                <div class="section-tools">
+                                                    <button type="button" class="tool-btn" id="clearText" title="Clear text">
+                                                        <i class="fas fa-eraser"></i>
+                                                    </button>
+                                                    <button type="button" class="tool-btn" id="pasteText" title="Paste from clipboard">
+                                                        <i class="fas fa-paste"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="input-container">
+                                                <textarea class="pro-textarea" id="textInput" rows="5"
+                                                    placeholder="Enter your text here... (supports all languages)" required></textarea>
+                                                <div class="input-stats">
+                                                    <span id="charCount">0 characters</span>
+                                                    <span id="wordCount">0 words</span>
+                                                </div>
+                                                {% if gemini_available %}
+                                                <div id="languageDetection" class="language-detection-pro hidden">
+                                                    <i class="fas fa-search"></i>
+                                                    <span id="detectedLangText">Detecting language...</span>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <!-- Translation Options -->
+                                        <div class="pro-options-section">
+                                            <div class="section-header">
+                                                <h4><i class="fas fa-cogs"></i> Translation Options</h4>
+                                            </div>
+                                            <div class="options-grid">
+                                                <div class="option-group">
+                                                    <label class="option-label">Target Language</label>
+                                                    <select class="pro-select" id="targetLang" required>
+                                                        {% for code, name in languages.items() %}
+                                                        <option value="{{ code }}">{{ name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="option-group">
+                                                    <label class="option-label">Translation Style</label>
+                                                    <select class="pro-select" id="translationMode">
+                                                        <option value="translation">Standard</option>
+                                                        <option value="professional">Professional</option>
+                                                        <option value="conversational">Conversational</option>
+                                                        <option value="creative">Creative</option>
+                                                    </select>
+                                                </div>
+                                                <div class="option-group">
+                                                    <label class="option-label">Additional Features</label>
+                                                    <div class="checkbox-group">
+                                                        <label class="checkbox-label">
+                                                            <input type="checkbox" id="explainTranslation">
+                                                            <span class="checkmark"></span>
+                                                            Explain translation
+                                                        </label>
+                                                        <label class="checkbox-label">
+                                                            <input type="checkbox" id="generateAudio" checked>
+                                                            <span class="checkmark"></span>
+                                                            Generate audio
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Action Buttons -->
+                                        <div class="pro-actions-section">
+                                            <button type="button" class="btn-pro btn-secondary" id="previewBtn">
+                                                <i class="fas fa-eye"></i>
+                                                Preview
+                                            </button>
+                                            <button type="submit" class="btn-pro btn-primary" id="translateBtn">
+                                                <i class="fas fa-language"></i>
+                                                Translate
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Voice Input Tab -->
+                                <div class="tab-pane-custom fade" id="voice" role="tabpanel">
+                                    <div class="voice-input-container">
+                                        <!-- Step 1: Choose Language -->
+                                        <div class="voice-step">
+                                            <div class="step-header">
+                                                <span class="step-number">1</span>
+                                                <h4>Choose Translation Language</h4>
+                                            </div>
+                                            <select class="form-select-custom" id="voiceTargetLang" required>
+                                                {% for code, name in languages.items() %}
+                                                <option value="{{ code }}">{{ name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <!-- Step 2: Record Voice -->
+                                        <div class="voice-step">
+                                            <div class="step-header">
+                                                <span class="step-number">2</span>
+                                                <h4>Record Your Voice</h4>
+                                            </div>
+
+                                            <!-- Simple Record Button -->
+                                            <div class="simple-record-area">
+                                                <button type="button" id="recordButton" class="record-btn">
+                                                    <div class="record-icon">
+                                                        <i class="fas fa-microphone"></i>
+                                                    </div>
+                                                    <div class="record-text">
+                                                        <span class="record-action">Click to Start Speaking</span>
+                                                        <small class="record-hint">Tap once to start, tap again to stop</small>
+                                                    </div>
+                                                </button>
+
+                                                <!-- Recording Status -->
+                                                <div id="recordingStatus" class="recording-status hidden">
+                                                    <div class="recording-animation">
+                                                        <div class="pulse-dot"></div>
+                                                        <div class="pulse-dot"></div>
+                                                        <div class="pulse-dot"></div>
+                                                    </div>
+                                                    <p>Listening... Speak now!</p>
+                                                    <button type="button" id="stopButton" class="stop-btn">
+                                                        <i class="fas fa-stop"></i> Stop Recording
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Step 3: Review & Translate -->
+                                        <div class="voice-step">
+                                            <div class="step-header">
+                                                <span class="step-number">3</span>
+                                                <h4>Review & Translate</h4>
+                                            </div>
+
+                                            <div id="speechResult" class="speech-display">
+                                                <div class="speech-placeholder">
+                                                    <i class="fas fa-volume-up"></i>
+                                                    <p>Your spoken words will appear here...</p>
+                                                </div>
+                                            </div>
+
+                                            <button type="button" id="translateVoice" class="btn-custom btn-primary-custom translate-btn" disabled>
+                                                <i class="fas fa-language"></i>
+                                                Translate My Speech
+                                            </button>
+                                        </div>
+
+                                        <!-- Browser Support Notice -->
+                                        <div id="browserNotice" class="browser-notice hidden">
+                                            <div class="notice-content">
+                                                <i class="fas fa-info-circle"></i>
+                                                <div>
+                                                    <h5>Voice Input Not Available</h5>
+                                                    <p>Please use <strong>Chrome</strong>, <strong>Edge</strong>, or <strong>Safari</strong> for voice input feature.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Audio File Input Tab -->
+                                <div class="tab-pane-custom fade" id="audio" role="tabpanel">
+                                    <form id="audioForm" class="simple-form">
+                                        <!-- Step 1: Upload Audio -->
+                                        <div class="input-step">
+                                            <div class="step-header">
+                                                <span class="step-number">1</span>
+                                                <h4>Upload Your Audio File</h4>
+                                            </div>
+                                            <div class="file-upload-wrapper">
+                                                <input type="file" class="file-input-custom" id="audioInput" accept=".wav,.mp3,.m4a" required>
+                                                <div class="file-upload-display">
+                                                    <i class="fas fa-cloud-upload-alt"></i>
+                                                    <span>Click to choose audio file</span>
+                                                    <small>Supports WAV, MP3, M4A formats</small>
+                                                </div>
+                                            </div>
+                                            <div class="input-hint">
+                                                <i class="fas fa-info-circle"></i>
+                                                <span>Audio should be clear with minimal background noise</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Step 2: Choose Language -->
+                                        <div class="input-step">
+                                            <div class="step-header">
+                                                <span class="step-number">2</span>
+                                                <h4>Choose Translation Language</h4>
+                                            </div>
+                                            <select class="form-select-custom" id="audioTargetLang" required>
+                                                {% for code, name in languages.items() %}
+                                                <option value="{{ code }}">{{ name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <!-- Step 3: Translate -->
+                                        <div class="input-step">
+                                            <button type="submit" class="btn-custom btn-primary-custom translate-btn-main">
+                                                <i class="fas fa-language"></i>
+                                                Translate Audio
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- AI Chat Tab -->
+                                <div class="tab-pane-custom fade" id="chat" role="tabpanel">
+                                    <div class="chat-container">
+                                        <div class="chat-header">
+                                            <h4><i class="fas fa-robot"></i> AI Language Assistant</h4>
+                                            <p>Ask questions about languages, translations, or get help with your text</p>
+                                        </div>
+
+                                        <div class="chat-messages" id="chatMessages">
+                                            <div class="message ai-message">
+                                                <div class="message-avatar">
+                                                    <i class="fas fa-robot"></i>
+                                                </div>
+                                                <div class="message-content">
+                                                    <p>Hello! I'm your AI language assistant. I can help you with:</p>
+                                                    <ul>
+                                                        <li>Translation questions and explanations</li>
+                                                        <li>Language learning tips</li>
+                                                        <li>Grammar and usage guidance</li>
+                                                        <li>Cultural context for translations</li>
+                                                    </ul>
+                                                    <p>How can I help you today?</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="chat-input-container">
+                                            <div class="chat-input-wrapper">
+                                                <textarea class="chat-input" id="chatInput"
+                                                    placeholder="Ask me anything about languages or translations..."
+                                                    rows="2"></textarea>
+                                                <button class="chat-send-btn" id="sendChatBtn">
+                                                    <i class="fas fa-paper-plane"></i>
+                                                </button>
+                                            </div>
+                                            <div class="chat-suggestions">
+                                                <button class="suggestion-btn" data-suggestion="How do I translate idioms accurately?">
+                                                    How do I translate idioms?
+                                                </button>
+                                                <button class="suggestion-btn" data-suggestion="What's the difference between formal and informal translations?">
+                                                    Formal vs informal translations
+                                                </button>
+                                                <button class="suggestion-btn" data-suggestion="How can I improve my translation skills?">
+                                                    Improve translation skills
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="row justify-content-center mt-4">
+                <div class="col-lg-10 col-xl-8">
+                    <div id="results" class="glass-card results-card" style="display: none;">
+                        <div class="card-header-custom">
+                            <h3 class="card-title">
+                                <i class="fas fa-check-circle"></i>
+                                Translation Results
+                                <div id="aiPoweredBadge" class="ai-powered-badge" style="display: none;">
+                                    <i class="fas fa-robot"></i>
+                                    <span>Powered by Gemini AI</span>
+                                </div>
+                            </h3>
+                        </div>
+                        <div class="card-body-custom">
+                            <div class="result-section">
+                                <div class="result-item">
+                                    <label class="result-label">
+                                        <i class="fas fa-quote-left"></i>
+                                        Original Text
+                                    </label>
+                                    <div class="result-content" id="originalText"></div>
+                                </div>
+
+                                <div class="translation-arrow">
+                                    <i class="fas fa-arrow-down"></i>
+                                </div>
+
+                                <div class="result-item">
+                                    <label class="result-label">
+                                        <i class="fas fa-language"></i>
+                                        Translated Text
+                                    </label>
+                                    <div class="result-content translated" id="translatedText"></div>
+                                </div>
+
+                                <div id="explanationSection" class="result-item" style="display: none;">
+                                    <label class="result-label">
+                                        <i class="fas fa-lightbulb"></i>
+                                        Translation Explanation
+                                    </label>
+                                    <div class="result-content explanation" id="explanationText"></div>
+                                </div>
+
+                                <div id="audioPlayer" class="audio-section" style="display: none;">
+                                    <label class="result-label">
+                                        <i class="fas fa-volume-up"></i>
+                                        Audio Output
+                                    </label>
+                                    <div class="audio-player-wrapper">
+                                        <audio controls class="custom-audio-player">
+                                            <source id="audioSource" src="" type="audio/mpeg">
+                                            Your browser does not support the audio element.
+                                        </audio>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="glass-footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 TranslatePro. Breaking language barriers with AI.</p>
+                <div class="footer-links">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        const themeIcon = themeToggle.querySelector('i');
+
+        // Load saved theme or default to light
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            themeIcon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        // Professional Tab Functionality
+        document.querySelectorAll('.pro-tab, .custom-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                document.querySelectorAll('.pro-tab, .custom-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-pane-custom').forEach(p => {
+                    p.classList.remove('show', 'active');
+                });
+
+                // Add active class to clicked tab
+                this.classList.add('active');
+                const target = document.querySelector(this.getAttribute('data-bs-target'));
+                target.classList.add('show', 'active');
+            });
+        });
+
+        // Professional Form Features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Text input enhancements
+            const textInput = document.getElementById('textInput');
+            const charCount = document.getElementById('charCount');
+            const wordCount = document.getElementById('wordCount');
+
+            if (textInput && charCount && wordCount) {
+                function updateStats() {
+                    const text = textInput.value;
+                    const chars = text.length;
+                    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+
+                    charCount.textContent = `${chars} characters`;
+                    wordCount.textContent = `${words} words`;
+                }
+
+                textInput.addEventListener('input', updateStats);
+                updateStats(); // Initial update
+            }
+
+            // Tool buttons
+            const clearBtn = document.getElementById('clearText');
+            const pasteBtn = document.getElementById('pasteText');
+
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    if (textInput) {
+                        textInput.value = '';
+                        updateStats();
+                        textInput.focus();
+                    }
+                });
+            }
+
+            if (pasteBtn) {
+                pasteBtn.addEventListener('click', async () => {
+                    try {
+                        const text = await navigator.clipboard.readText();
+                        if (textInput) {
+                            textInput.value = text;
+                            updateStats();
+                            textInput.focus();
+                        }
+                    } catch (err) {
+                        console.error('Failed to read clipboard:', err);
+                        alert('Unable to access clipboard. Please paste manually.');
+                    }
+                });
+            }
+        });
+
+        // File Upload Display
+        const fileInput = document.getElementById('audioInput');
+        const fileDisplay = document.querySelector('.file-upload-display span');
+
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                fileDisplay.textContent = this.files[0].name;
+            } else {
+                fileDisplay.textContent = 'Choose audio file or drag & drop';
+            }
+        });
+
+        // Language Detection for Text Input
+        {% if gemini_available %}
+        let detectionTimeout;
+        const textInput = document.getElementById('textInput');
+        const languageDetection = document.getElementById('languageDetection');
+        const detectedLangText = document.getElementById('detectedLangText');
+
+        textInput.addEventListener('input', function() {
+            const text = this.value.trim();
+
+            if (text.length > 10) { // Only detect for meaningful text
+                clearTimeout(detectionTimeout);
+
+                // Show detection in progress
+                languageDetection.classList.remove('hidden');
+                detectedLangText.textContent = 'Detecting language...';
+
+                detectionTimeout = setTimeout(async () => {
+                    try {
+                        const response = await fetch('/detect-language', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ text: text })
+                        });
+
+                        const data = await response.json();
+                        if (response.ok) {
+                            detectedLangText.textContent = `Detected: ${data.detected_language_name}`;
+                        } else {
+                            languageDetection.classList.add('hidden');
+                        }
+                    } catch (error) {
+                        console.error('Language detection error:', error);
+                        languageDetection.classList.add('hidden');
+                    }
+                }, 1000); // Wait 1 second after user stops typing
+            } else {
+                languageDetection.classList.add('hidden');
+                clearTimeout(detectionTimeout);
+            }
+        });
+        {% endif %}
+
+        // AI Chat Functionality
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+        let chatContext = '';
+
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+
+            messageDiv.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-${isUser ? 'user' : 'robot'}"></i>
+                </div>
+                <div class="message-content">
+                    ${isUser ? `<p>${content}</p>` : content}
+                </div>
+            `;
+
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendChatMessage(message) {
+            if (!message.trim()) return;
+
+            // Add user message
+            addMessage(message, true);
+
+            // Show typing indicator
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai-message typing';
+            typingDiv.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <p><i class="fas fa-spinner fa-spin"></i> Thinking...</p>
+                </div>
+            `;
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        context: chatContext
+                    })
+                });
+
+                const data = await response.json();
+
+                // Remove typing indicator
+                typingDiv.remove();
+
+                if (response.ok) {
+                    addMessage(`<p>${data.response}</p>`);
+                    chatContext += `User: ${message}\nAI: ${data.response}\n`;
+                } else {
+                    addMessage(`<p style="color: #fa709a;">Sorry, I encountered an error: ${data.error}</p>`);
+                }
+            } catch (error) {
+                typingDiv.remove();
+                addMessage(`<p style="color: #fa709a;">Sorry, I'm having trouble connecting right now.</p>`);
+                console.error('Chat error:', error);
+            }
+        }
+
+        // Chat event listeners
+        if (sendChatBtn) {
+            sendChatBtn.addEventListener('click', () => {
+                const message = chatInput.value.trim();
+                if (message) {
+                    sendChatMessage(message);
+                    chatInput.value = '';
+                }
+            });
+        }
+
+        if (chatInput) {
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    const message = chatInput.value.trim();
+                    if (message) {
+                        sendChatMessage(message);
+                        chatInput.value = '';
+                    }
+                }
+            });
+        }
+
+        // Suggestion buttons
+        document.querySelectorAll('.suggestion-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const suggestion = btn.getAttribute('data-suggestion');
+                chatInput.value = suggestion;
+                sendChatMessage(suggestion);
+                chatInput.value = '';
+            });
+        });
+
+        // Simple Voice Recognition Setup
+        let recognition;
+        let isRecording = false;
+        let finalTranscript = '';
+
+        // Initialize voice recognition
+        function initVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+
+                recognition.continuous = false; // Single phrase recognition
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = function() {
+                    isRecording = true;
+                    showRecordingState();
+                };
+
+                recognition.onresult = function(event) {
+                    let transcript = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        transcript += event.results[i][0].transcript;
+                    }
+
+                    if (event.results[event.results.length - 1].isFinal) {
+                        finalTranscript = transcript;
+                        showTranscript(transcript);
+                        stopRecording();
+                    } else {
+                        showLiveTranscript(transcript);
+                    }
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    showError('Could not understand speech. Please try again.');
+                    stopRecording();
+                };
+
+                recognition.onend = function() {
+                    stopRecording();
+                };
+
+                return true;
+            } else {
+                showBrowserNotice();
+                return false;
+            }
+        }
+
+        // UI State Functions
+        function showRecordingState() {
+            document.getElementById('recordButton').style.display = 'none';
+            document.getElementById('recordingStatus').classList.remove('hidden');
+            document.getElementById('speechResult').innerHTML =
+                '<div class="listening-live"><i class="fas fa-microphone pulse"></i><p>Listening...</p></div>';
+        }
+
+        function showIdleState() {
+            document.getElementById('recordButton').style.display = 'flex';
+            document.getElementById('recordingStatus').classList.add('hidden');
+            document.querySelector('.record-action').textContent = 'Click to Start Speaking';
+            document.querySelector('.record-hint').textContent = 'Tap once to start, tap again to stop';
+        }
+
+        function showTranscript(text) {
+            document.getElementById('speechResult').innerHTML =
+                '<div class="speech-final"><i class="fas fa-check-circle"></i><p>' + text + '</p></div>';
+            document.getElementById('translateVoice').disabled = false;
+            document.querySelector('.translate-btn').classList.add('ready');
+        }
+
+        function showLiveTranscript(text) {
+            document.getElementById('speechResult').innerHTML =
+                '<div class="speech-live"><i class="fas fa-microphone pulse"></i><p>' + text + '</p></div>';
+        }
+
+        function showError(message) {
+            document.getElementById('speechResult').innerHTML =
+                '<div class="speech-error"><i class="fas fa-exclamation-triangle"></i><p>' + message + '</p></div>';
+        }
+
+        function showBrowserNotice() {
+            document.getElementById('browserNotice').classList.remove('hidden');
+            document.getElementById('recordButton').style.display = 'none';
+        }
+
+        // Recording Functions
+        function startRecording() {
+            if (recognition && !isRecording) {
+                finalTranscript = '';
+                document.getElementById('translateVoice').disabled = true;
+                document.querySelector('.translate-btn').classList.remove('ready');
+                recognition.start();
+            }
+        }
+
+        function stopRecording() {
+            if (recognition && isRecording) {
+                recognition.stop();
+                isRecording = false;
+                showIdleState();
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize voice recognition
+            const voiceSupported = initVoiceRecognition();
+
+            if (voiceSupported) {
+                // Simple record button - one click to start/stop
+                document.getElementById('recordButton').addEventListener('click', function() {
+                    if (!isRecording) {
+                        startRecording();
+                    }
+                });
+
+                // Stop button in recording status
+                document.getElementById('stopButton').addEventListener('click', stopRecording);
+
+                // Translate button
+                document.getElementById('translateVoice').addEventListener('click', async function() {
+                    if (!finalTranscript.trim()) {
+                        alert('Please record your speech first!');
+                        return;
+                    }
+
+                    const targetLang = document.getElementById('voiceTargetLang').value;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Translating...';
+                    this.disabled = true;
+
+                    try {
+                        await handleTranslation('voice', finalTranscript.trim(), targetLang);
+                    } finally {
+                        this.innerHTML = '<i class="fas fa-language"></i> Translate My Speech';
+                        this.disabled = false;
+                    }
+                });
+            }
+        });
+
+    </script>
+    <script>
+        // Handle both old and new form submissions
+        const textForm = document.getElementById('textForm');
+        const translateBtn = document.getElementById('translateBtn');
+
+        if (textForm) {
+            textForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await handleTranslation('text');
+            });
+        }
+
+        if (translateBtn) {
+            translateBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                await handleTranslation('text');
+            });
+        }
+
+        document.getElementById('audioForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await handleTranslation('audio');
+        });
+
+        async function handleTranslation(inputType, voiceText = null, voiceTargetLang = null) {
+            const formData = new FormData();
+            let targetLang;
+
+            if (inputType === 'text') {
+                targetLang = document.getElementById('targetLang').value;
+                const text = document.getElementById('textInput').value;
+                const mode = document.getElementById('translationMode') ? document.getElementById('translationMode').value : 'translation';
+                const explain = document.getElementById('explainTranslation') ? document.getElementById('explainTranslation').checked : false;
+
+                formData.append('text', text);
+                formData.append('mode', mode);
+                formData.append('explain', explain);
+            } else if (inputType === 'voice') {
+                targetLang = voiceTargetLang;
+                formData.append('text', voiceText);
+            } else if (inputType === 'audio') {
+                targetLang = document.getElementById('audioTargetLang').value;
+                const audioFile = document.getElementById('audioInput').files[0];
+                formData.append('audio', audioFile);
+            }
+            formData.append('target_lang', targetLang);
+
+            try {
+                const response = await fetch('/translate', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('results').style.display = 'block';
+                    document.getElementById('originalText').textContent = data.original_text;
+                    document.getElementById('translatedText').textContent = data.translated_text;
+
+                    // Show explanation if available
+                    const explanationSection = document.getElementById('explanationSection');
+                    const explanationText = document.getElementById('explanationText');
+                    if (data.explanation && data.explanation.trim()) {
+                        explanationText.textContent = data.explanation;
+                        explanationSection.style.display = 'block';
+                    } else {
+                        explanationSection.style.display = 'none';
+                    }
+
+                    // Show AI powered badge if using Gemini
+                    const aiPoweredBadge = document.getElementById('aiPoweredBadge');
+                    if (data.powered_by === 'Gemini AI') {
+                        aiPoweredBadge.style.display = 'flex';
+                    } else {
+                        aiPoweredBadge.style.display = 'none';
+                    }
+
+                    // Handle audio output
+                    const audioPlayer = document.getElementById('audioPlayer');
+                    const audioSource = document.getElementById('audioSource');
+
+                    if (data.audio_url) {
+                        audioSource.src = data.audio_url;
+                        audioPlayer.style.display = 'block';
+                        audioSource.parentElement.load();
+
+                        // Add error handling for audio loading
+                        audioSource.parentElement.onerror = function() {
+                            console.error('Audio failed to load');
+                            audioPlayer.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 1rem;"><i class="fas fa-exclamation-triangle"></i> Audio not available</p>';
+                        };
+                    } else {
+                        audioPlayer.style.display = 'block';
+                        audioPlayer.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 1rem;"><i class="fas fa-info-circle"></i> Audio generation not available</p>';
+                    }
+
+                    // Scroll to results
+                    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert(data.error || 'Translation failed');
+                }
+            } catch (error) {
+                alert('An error occurred during translation');
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html> 
